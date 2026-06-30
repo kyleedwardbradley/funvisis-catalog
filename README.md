@@ -7,7 +7,7 @@ Investigaciones Sismológicas).
 The catalog: **[`funvisis_catalog.csv`](funvisis_catalog.csv)**
 (~22k events, 2003 → present).
 
-| Source | Period 
+| Source | Period | Notes |
 |---|---|---|
 | **ISC Bulletin**, agency `FUNV` | ~2003 → 2025-03 | FDSN event service |
 | **Report images** (`reporte_<N>.gif`) | 2025-03 → present | OCR of the per-event "Reporte Sismológico Preliminar" |
