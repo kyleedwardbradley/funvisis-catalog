@@ -1,0 +1,4 @@
+requests>=2.28
+# Optional — only needed for `build` with report-image OCR (not for `update`):
+pillow>=9
+pytesseract>=0.3
