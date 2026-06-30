@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import csv
-from datetime import datetime
+import json
+from datetime import datetime, timezone
 
 from . import bulletin, images, isc
 from .http import log
@@ -46,6 +47,33 @@ def _typed(row):
     return row
 
 
+def meta_path(csv_path):
+    base = csv_path[:-4] if csv_path.endswith(".csv") else csv_path
+    return base + ".meta.json"
+
+
+def write_meta(records, csv_path, generated=None):
+    rows = list(records.values()) if isinstance(records, dict) else list(records)
+    times = sorted(r.get("time") for r in rows if r.get("time"))
+    by_author = {}
+    for r in rows:
+        a = r.get("author") or ""
+        by_author[a] = by_author.get(a, 0) + 1
+    meta = {
+        "generated_utc": generated or datetime.now(timezone.utc).strftime(
+            "%Y-%m-%dT%H:%M:%SZ"),
+        "rows": len(rows),
+        "time_range": {"min": times[0] if times else None,
+                       "max": times[-1] if times else None},
+        "by_author": dict(sorted(by_author.items())),
+        "source": "https://github.com/kyleedwardbradley/funvisis-catalog",
+    }
+    with open(meta_path(csv_path), "w", encoding="utf-8") as f:
+        json.dump(meta, f, indent=2)
+        f.write("\n")
+    return meta
+
+
 def build(out_path, do_isc=True, do_images=True, do_html=True,
           cutover=datetime(2025, 3, 18), start_year=isc.START_YEAR,
           image_floor=images.FLOOR):
@@ -60,6 +88,7 @@ def build(out_path, do_isc=True, do_images=True, do_html=True,
         merge(catalog, bulletin.fetch())
         log(f"[build] after bulletin: {len(catalog)}")
     n = write_csv(catalog, out_path)
+    write_meta(catalog, out_path)
     log(f"[build] wrote {n} records → {out_path}")
     return n
 
@@ -69,5 +98,6 @@ def update(csv_path):
     before = len(catalog)
     merge(catalog, bulletin.fetch())
     n = write_csv(catalog, csv_path)
+    write_meta(catalog, csv_path)
     log(f"[update] {csv_path}: {before} → {n} (+{n - before})")
     return n

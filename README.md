@@ -5,7 +5,8 @@ earthquake hypocenters located by **FUNVISIS** (Fundación Venezolana de
 Investigaciones Sismológicas). 
 
 The catalog: **[`funvisis_catalog.csv`](funvisis_catalog.csv)**
-(~22k events, 2003 → present).
+(~22k events, 2003 → present). Scrape date/time and row count:
+**[`funvisis_catalog.meta.json`](funvisis_catalog.meta.json)** (`generated_utc`).
 
 | Source | Period | Notes |
 |---|---|---|
