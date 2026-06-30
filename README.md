@@ -1,27 +1,17 @@
 # funvisis-catalog
 
-A small, standalone scraper that assembles a catalog of Venezuelan
+A small, standalone scraper that assembles a CSV catalog of Venezuelan
 earthquake hypocenters located by **FUNVISIS** (Fundación Venezolana de
-Investigaciones Sismológicas) and writes it to a single CSV. Pure
-Python, no framework — use the data however you like.
+Investigaciones Sismológicas). 
 
-The published catalog lives in this repo: **[`funvisis_catalog.csv`](funvisis_catalog.csv)**
+The catalog: **[`funvisis_catalog.csv`](funvisis_catalog.csv)**
 (~22k events, 2003 → present).
 
-## Why this exists
-
-FUNVISIS publishes no historical archive and no FDSN event service of
-its own. This tool reconstructs a usable catalog from the sources that
-*do* exist, and keeps it current:
-
-| Source | Period | How |
+| Source | Period 
 |---|---|---|
-| **ISC Bulletin**, agency `FUNV` | ~2003 → 2025-03 | FDSN event service (genuinely FUNVISIS-located origins, stable ISC ids) |
-| **Report images** (`reporte_<N>.gif`) | 2025-03 → present | OCR of the per-event "Reporte Sismológico Preliminar" (UTC time to a tenth of a second) |
-| **Live bulletin** (`sis_mes.php`) | current month | HTML table; each row links its report GIF, giving the serial id |
-
-The three meet at a cutover date with no gap. Report images and bulletin
-rows share the same `FUNVISIS_R<N>` serial id, so updates dedup cleanly.
+| **ISC Bulletin**, agency `FUNV` | ~2003 → 2025-03 | FDSN event service |
+| **Report images** (`reporte_<N>.gif`) | 2025-03 → present | OCR of the per-event "Reporte Sismológico Preliminar" |
+| **Live bulletin** (`sis_mes.php`) | current month | HTML table |
 
 ## CSV schema
 
