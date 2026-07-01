@@ -1,8 +1,7 @@
 # funvisis-catalog
 
-A small, standalone scraper that assembles a CSV catalog of Venezuelan
-earthquake hypocenters located by **FUNVISIS** (Fundación Venezolana de
-Investigaciones Sismológicas). 
+Assembles a CSV catalog of earthquake hypocenters located 
+by **FUNVISIS** (Fundación Venezolana de Investigaciones Sismológicas). 
 
 The catalog: **[`funvisis_catalog.csv`](funvisis_catalog.csv)**
 (~22k events, 2003 → present). Scrape date/time and row count:
@@ -13,7 +12,7 @@ The catalog: **[`funvisis_catalog.csv`](funvisis_catalog.csv)**
 | **ISC Bulletin**, agency `FUNV` | ~2003 → 2025-03 | FDSN event service |
 | **Report images** (`reporte_<N>.gif`) | 2025-03 → present | OCR of the per-event "Reporte Sismológico Preliminar"; also the incremental **leading edge** (`update` walks new serials) |
 
-> The live HTML bulletin (`sis_mes.php`) is **no longer used**. It is
+> The live HTML bulletin (`sis_mes.php`) is **not used**. It is
 > strictly lower-fidelity than the report images it indexes (local-time
 > minute precision vs OCR's UTC-to-the-second, forced `Mw`) and is
 > month-scoped, so it drops the tail at every month rollover. The report
