@@ -1,4 +1,6 @@
 requests>=2.28
-# Optional — only needed for `build` with report-image OCR (not for `update`):
+# Report-image OCR — needed for BOTH `build` (recent period) and `update`
+# (the OCR leading-edge walk). Also requires the `tesseract` binary with
+# the `spa` traineddata on PATH (brew/apt install it separately).
 pillow>=9
 pytesseract>=0.3

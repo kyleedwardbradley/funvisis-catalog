@@ -63,6 +63,12 @@ def available():
 
 def _configure():
     import pytesseract
+    # Some report GIFs are served partially truncated. Tolerate them so a
+    # missing trailing byte range doesn't drop an otherwise-readable image
+    # (the parameter text sits mid-image); only images truncated up into
+    # the text region are unrecoverable.
+    from PIL import ImageFile
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
     cmd = os.environ.get("TESSERACT_CMD") or os.environ.get("STRATUM_TESSERACT")
     if cmd:
         pytesseract.pytesseract.tesseract_cmd = cmd

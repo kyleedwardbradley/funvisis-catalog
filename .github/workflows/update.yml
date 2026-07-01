@@ -13,7 +13,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install requests
+      - name: install tesseract (Spanish) for report-image OCR
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr tesseract-ocr-spa
+      - run: pip install requests pillow pytesseract
       - run: python -m funvisis update --csv funvisis_catalog.csv
       - name: commit refreshed CSV
         run: |

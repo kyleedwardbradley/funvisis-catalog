@@ -11,8 +11,15 @@ The catalog: **[`funvisis_catalog.csv`](funvisis_catalog.csv)**
 | Source | Period | Notes |
 |---|---|---|
 | **ISC Bulletin**, agency `FUNV` | ~2003 → 2025-03 | FDSN event service |
-| **Report images** (`reporte_<N>.gif`) | 2025-03 → present | OCR of the per-event "Reporte Sismológico Preliminar" |
-| **Live bulletin** (`sis_mes.php`) | current month | HTML table |
+| **Report images** (`reporte_<N>.gif`) | 2025-03 → present | OCR of the per-event "Reporte Sismológico Preliminar"; also the incremental **leading edge** (`update` walks new serials) |
+
+> The live HTML bulletin (`sis_mes.php`) is **no longer used**. It is
+> strictly lower-fidelity than the report images it indexes (local-time
+> minute precision vs OCR's UTC-to-the-second, forced `Mw`) and is
+> month-scoped, so it drops the tail at every month rollover. The report
+> images are serial-numbered and never roll over, so `update` walks them
+> instead. (`bulletin.py` remains only as an emergency `build --html`
+> fallback.)
 
 ## CSV schema
 
@@ -27,24 +34,27 @@ id, time, latitude, longitude, depth_km, magnitude, mag_type, place, author, eve
 ## Usage
 
 ```bash
-pip install -r requirements.txt          # requests; pillow+pytesseract only for OCR
+pip install -r requirements.txt          # requests + pillow + pytesseract
 
-# Dependency-free incremental update (merge the current bulletin):
+# Incremental update — OCR-walk new report images from the newest serial
+# already in the CSV (the leading edge):
 python -m funvisis update --csv funvisis_catalog.csv
+#   --start N     force the OCR walk to begin at serial N
 
 # Full rebuild from scratch:
 python -m funvisis build --out funvisis_catalog.csv
 #   --no-images   skip the OCR step (no pillow/tesseract needed)
-#   --no-isc / --no-html
+#   --no-isc
+#   --html        legacy: also merge the live bulletin (avoid — see above)
 ```
 
-The OCR step (`build` with images) needs the `tesseract` binary with the
-`spa` traineddata (`brew install tesseract tesseract-lang` /
+Both `update` and `build` (with images) need the `tesseract` binary with
+the `spa` traineddata (`brew install tesseract tesseract-lang` /
 `apt-get install tesseract-ocr tesseract-ocr-spa`); point at a non-PATH
-binary with `TESSERACT_CMD`. `update` needs only `requests`.
+binary with `TESSERACT_CMD`.
 
-CI (`.github/workflows/update.yml`) runs `update` on a schedule and
-commits the refreshed CSV.
+CI (`.github/workflows/update.yml`) installs tesseract and runs `update`
+on a schedule, committing the refreshed CSV.
 
 ## Attribution
 

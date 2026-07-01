@@ -74,9 +74,15 @@ def write_meta(records, csv_path, generated=None):
     return meta
 
 
-def build(out_path, do_isc=True, do_images=True, do_html=True,
+def build(out_path, do_isc=True, do_images=True, do_html=False,
           cutover=datetime(2025, 3, 18), start_year=isc.START_YEAR,
           image_floor=images.FLOOR):
+    # `do_html` (the live HTML bulletin) is off by default and is a legacy
+    # fallback only. The bulletin is strictly lower-fidelity than the report
+    # images it indexes — local-time minute precision vs OCR's UTC-to-the-
+    # second, forced Mw, month-scoped — and because it merges after the OCR
+    # pass it would OVERWRITE the higher-fidelity image rows for the same
+    # FUNVISIS_R<N> id. Prefer OCR (`do_images`) for the recent period.
     catalog = {}
     if do_isc:
         merge(catalog, isc.fetch(start_year=start_year, cutover=cutover))
@@ -93,11 +99,40 @@ def build(out_path, do_isc=True, do_images=True, do_html=True,
     return n
 
 
-def update(csv_path):
+_SERIAL_PREFIX = "FUNVISIS_R"
+
+
+def _max_serial(catalog, floor=images.FLOOR):
+    """Highest ``FUNVISIS_R<N>`` report serial present in the catalog, or
+    the OCR floor when none are on file yet."""
+    best = floor
+    for eid in catalog:
+        if eid.startswith(_SERIAL_PREFIX):
+            try:
+                best = max(best, int(eid[len(_SERIAL_PREFIX):]))
+            except ValueError:
+                pass
+    return best
+
+
+def update(csv_path, start=None):
+    """Incrementally extend the catalog by OCR-walking the report images
+    (``reporte_<N>.gif``) forward from the newest serial already on file.
+
+    The report images are the authoritative per-event source — UTC to the
+    second, real depth/magnitude, serial-numbered — and the walk is not
+    month-scoped, so unlike the live HTML bulletin it can't lose the tail
+    at a month rollover. Needs the OCR deps (pillow + pytesseract + the
+    tesseract binary with the ``spa`` traineddata); `images.walk` fails
+    loudly if they're missing.
+    """
     catalog = read_csv(csv_path)
     before = len(catalog)
-    merge(catalog, bulletin.fetch())
+    if start is None:
+        start = _max_serial(catalog)
+    merge(catalog, images.walk(start=start))
     n = write_csv(catalog, csv_path)
     write_meta(catalog, csv_path)
-    log(f"[update] {csv_path}: {before} → {n} (+{n - before})")
+    log(f"[update] {csv_path}: {before} → {n} (+{n - before}) "
+        f"[OCR from #{start}]")
     return n
