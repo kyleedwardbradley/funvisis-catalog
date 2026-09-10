@@ -1,13 +1,13 @@
 {
-  "generated_utc": "2026-09-09T20:59:18Z",
-  "rows": 23983,
+  "generated_utc": "2026-09-10T04:47:37Z",
+  "rows": 23989,
   "time_range": {
     "min": "2003-01-01T02:55:36.700Z",
-    "max": "2026-09-09T20:28:43.2Z"
+    "max": "2026-09-10T03:25:33.5Z"
   },
   "by_author": {
     "FUNV": 19671,
-    "FUNVISIS": 4312
+    "FUNVISIS": 4318
   },
   "source": "https://github.com/kyleedwardbradley/funvisis-catalog"
 }
